@@ -7,7 +7,7 @@ import { logException } from './reporter'
 const hasCordovaPlugin = () => {
   return isCordova() &&
     window.cordova.plugins !== undefined &&
-    window.cordova.plugins.photoLibrary !== undefined
+    window.cordova.plugins.listLibraryItems !== undefined
 }
 
 export const isAuthorized = async () => {
@@ -17,8 +17,8 @@ export const isAuthorized = async () => {
   return new Promise(resolve => {
     const success = () => resolve(true)
     const error = () => resolve(false)
-    window.cordova.plugins.photoLibrary.getLibrary(success, error, {includeCloudData: false, includeVideos: true})
-    // window.cordova.plugins.photoLibrary.isAuthorized(success, error)
+    // window.cordova.plugins.photoLibrary.getLibrary(success, error, {includeCloudData: false, includeVideos: true})
+    window.cordova.plugins.listLibraryItems.isAuthorized(success, error)
   })
 }
 
@@ -27,7 +27,7 @@ export const requestAuthorization = async () => {
     return Promise.resolve(false)
   }
   return new Promise((resolve, reject) => {
-    window.cordova.plugins.photoLibrary.requestAuthorization(
+    window.cordova.plugins.listLibraryItems.requestReadAuthorization(
       () => resolve(true),
       (error) => {
         if (!error.startsWith('Permission')) {
@@ -35,9 +35,6 @@ export const requestAuthorization = async () => {
           logException('requestAuthorization error:', error)
         }
         resolve(false)
-      },
-      {
-        read: true
       }
     )
   })
@@ -119,13 +116,13 @@ export const getPhotos = async () => {
 
   if (hasCordovaPlugin()) {
     return new Promise((resolve, reject) => {
-      window.cordova.plugins.photoLibrary.getLibrary(
+      window.cordova.plugins.listLibraryItems.listItems(
+        true, true, false,
         (response) => resolve(response.library),
         (err) => {
           console.warn(err)
           resolve(defaultReturn)
-        },
-        {includeCloudData: false, includeVideos: true}
+        }
       )
     })
   }
@@ -137,6 +134,7 @@ export const getFilteredPhotos = async () => {
   let photos = await getPhotos()
 
   if (hasCordovaPlugin() && isAndroid()) {
+    // TODO: filter in native code !!
     photos = photos.filter((photo) => photo.id.indexOf('DCIM') !== -1)
   }
 

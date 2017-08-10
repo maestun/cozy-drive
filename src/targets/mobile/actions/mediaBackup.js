@@ -4,8 +4,8 @@ import { setBackupImages } from './settings'
 import { getFilteredPhotos, uploadLibraryItem, isAuthorized, getMediaFolderName, requestAuthorization } from '../lib/media'
 import { updateStatusBackgroundService } from '../lib/background'
 import { backupAllowed } from '../lib/network'
-import { HTTP_CODE_CONFLICT } from '../../../actions'
-import { logInfo, logException } from '../lib/reporter'
+// import { HTTP_CODE_CONFLICT } from '../../../actions'
+import { logInfo } from '../lib/reporter'
 
 export const MEDIA_UPLOAD_START = 'MEDIA_UPLOAD_START'
 export const MEDIA_UPLOAD_END = 'MEDIA_UPLOAD_END'
@@ -15,7 +15,7 @@ export const CURRENT_UPLOAD = 'CURRENT_UPLOAD'
 
 const startMediaUpload = () => ({ type: MEDIA_UPLOAD_START })
 const endMediaUpload = () => ({ type: MEDIA_UPLOAD_END })
-const successMediaUpload = (media) => ({ type: MEDIA_UPLOAD_SUCCESS, id: media.id })
+// const successMediaUpload = (media) => ({ type: MEDIA_UPLOAD_SUCCESS, id: media.id })
 const currentUploading = (media, uploadCounter, totalUpload) => (
   {
     type: CURRENT_UPLOAD,
@@ -69,8 +69,10 @@ export const startMediaBackup = (dir, force = false) => async (dispatch, getStat
     if (totalUpload > 0) {
       const dirID = await getDirID(dir)
       let uploadCounter = 0
+      console.log(photosToUpload)
       for (const photo of photosToUpload) {
         if (getState().mobile.mediaBackup.cancelMediaBackup || !canBackup(force, getState)) {
+          console.log('break request !!')
           break
         }
         dispatch(currentUploading(photo, uploadCounter++, totalUpload))
@@ -83,33 +85,35 @@ export const startMediaBackup = (dir, force = false) => async (dispatch, getStat
 }
 
 const uploadPhoto = (dirID, photo) => async (dispatch, getState) => {
-  const logError = (err, msg) => {
-    console.warn(msg)
-    console.warn(err)
-    console.info(JSON.stringify(photo))
-    logException('startMediaBackup error')
-  }
+  // const logError = (err, msg) => {
+  //   console.warn(msg)
+  //   console.warn(err)
+  //   console.info(JSON.stringify(photo))
+  //   logException('startMediaBackup error')
+  // }
 
-  try {
-    const blob = await uploadLibraryItem(dirID, photo)
-    const options = {
-      dirID,
-      name: photo.fileName
-    }
-    await cozy.client.files.create(blob, options).then(() => {
-      dispatch(successMediaUpload(photo))
-    }).catch(err => {
-      if (err.status === HTTP_CODE_CONFLICT) {
-        dispatch(successMediaUpload(photo))
-      } else if (err === 'Could not fetch the image') {
-        dispatch(successMediaUpload(photo))
-      } else {
-        logError(err, 'startMediaBackup create error')
-      }
-    })
-  } catch (err) {
-    logError(err, 'startMediaBackup getBlob error')
-  }
+  await uploadLibraryItem(dirID, photo)
+
+  // try {
+  //   const blob = await uploadLibraryItem(dirID, photo)
+  //   const options = {
+  //     dirID,
+  //     name: photo.fileName
+  //   }
+  //   await cozy.client.files.create(blob, options).then(() => {
+  //     dispatch(successMediaUpload(photo))
+  //   }).catch(err => {
+  //     if (err.status === HTTP_CODE_CONFLICT) {
+  //       dispatch(successMediaUpload(photo))
+  //     } else if (err === 'Could not fetch the image') {
+  //       dispatch(successMediaUpload(photo))
+  //     } else {
+  //       logError(err, 'startMediaBackup create error')
+  //     }
+  //   })
+  // } catch (err) {
+  //   logError(err, 'startMediaBackup getBlob error')
+  // }
 }
 
 // backupImages
