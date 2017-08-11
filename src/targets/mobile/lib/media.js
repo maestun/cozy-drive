@@ -55,7 +55,7 @@ export const requestAuthorization = async () => {
 // }
 
 // -------------------------------------------------------------------------
-// LIBRARY ITEM UPLOAD
+// LIBRARY ITEM UPLOAD (NSURLSESSION)
 function onUploadSuccess (r) {
   console.log('Code = ' + r.responseCode)
   console.log('Response = ' + r.response)
@@ -67,8 +67,39 @@ function onUploadFail (error) {
   console.log('upload error source ' + error.source)
   console.log('upload error target ' + error.target)
 }
-
 export const uploadLibraryItem = async (dirID, libraryItem) => {
+  if (hasCordovaPlugin()) {
+    return new Promise(async (resolve, reject) => {
+      console.log(libraryItem)
+      var credentials = await cozy.client.authorize()
+      var token = credentials.token.accessToken
+      var uri = encodeURI(cozy.client._url + '/files/' + dirID +
+                          '?Type=file&Name=' + libraryItem['fileName'] +
+                          '&Tags=library' +
+                          '&Executable=false')
+      console.log(uri)
+      var payload = {
+        'id': dirID,
+        'libraryId': libraryItem['id'],
+        'mimeType': libraryItem['mimeType'],
+        'filePath': libraryItem['filePath'],
+        'serverUrl': uri,
+        'headers': {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': libraryItem['mimeType']
+        }
+      }
+      console.log(payload)
+      window.cordova.plugins.listLibraryItems.uploadItem(payload, onUploadSuccess, onUploadFail)
+    })
+  }
+  return Promise.resolve('')
+}
+// -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+// LIBRARY ITEM UPLOAD
+export const uploadLibraryItemOLD = async (dirID, libraryItem) => {
   if (hasCordovaPlugin()) {
     return new Promise(async (resolve, reject) => {
       // Upload a file
