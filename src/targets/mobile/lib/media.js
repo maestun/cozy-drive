@@ -166,7 +166,7 @@ export const getFilteredPhotos = async () => {
 
   if (hasCordovaPlugin() && isAndroid()) {
     // TODO: filter in native code !!
-    photos = photos.filter((photo) => photo.id.indexOf('DCIM') !== -1)
+    // photos = photos.filter((photo) => photo.id.indexOf('DCIM') !== -1)
   }
 
   return Promise.resolve(photos)
