@@ -57,16 +57,19 @@ export const requestAuthorization = async () => {
 // -------------------------------------------------------------------------
 // LIBRARY ITEM UPLOAD (NSURLSESSION)
 function onUploadSuccess (r) {
+  console.log('onUploadSuccess: ' + r)
   console.log('Code = ' + r.responseCode)
   console.log('Response = ' + r.response)
   console.log('Sent = ' + r.bytesSent)
 }
 
 function onUploadFail (error) {
+  console.log('onUploadFail: ' + error)
   alert('An error has occurred: Code = ' + error.code)
   console.log('upload error source ' + error.source)
   console.log('upload error target ' + error.target)
 }
+
 export const uploadLibraryItem = async (dirID, libraryItem) => {
   if (hasCordovaPlugin()) {
     return new Promise(async (resolve, reject) => {

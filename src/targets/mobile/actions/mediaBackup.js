@@ -15,7 +15,7 @@ export const CURRENT_UPLOAD = 'CURRENT_UPLOAD'
 
 const startMediaUpload = () => ({ type: MEDIA_UPLOAD_START })
 const endMediaUpload = () => ({ type: MEDIA_UPLOAD_END })
-// const successMediaUpload = (media) => ({ type: MEDIA_UPLOAD_SUCCESS, id: media.id })
+const successMediaUpload = (media) => ({ type: MEDIA_UPLOAD_SUCCESS, id: media.id })
 const currentUploading = (media, uploadCounter, totalUpload) => (
   {
     type: CURRENT_UPLOAD,
@@ -89,7 +89,7 @@ const uploadPhoto = (dirID, photo) => async (dispatch, getState) => {
     console.warn(msg)
     console.warn(err)
     console.info(JSON.stringify(photo))
-    logException('startMediaBackup error')
+    // logException('startMediaBackup error')
   }
 
   try {
