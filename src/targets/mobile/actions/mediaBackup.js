@@ -85,35 +85,19 @@ export const startMediaBackup = (dir, force = false) => async (dispatch, getStat
 }
 
 const uploadPhoto = (dirID, photo) => async (dispatch, getState) => {
-  // const logError = (err, msg) => {
-  //   console.warn(msg)
-  //   console.warn(err)
-  //   console.info(JSON.stringify(photo))
-  //   logException('startMediaBackup error')
-  // }
+  const logError = (err, msg) => {
+    console.warn(msg)
+    console.warn(err)
+    console.info(JSON.stringify(photo))
+    logException('startMediaBackup error')
+  }
 
-  await uploadLibraryItem(dirID, photo)
-
-  // try {
-  //   const blob = await uploadLibraryItem(dirID, photo)
-  //   const options = {
-  //     dirID,
-  //     name: photo.fileName
-  //   }
-  //   await cozy.client.files.create(blob, options).then(() => {
-  //     dispatch(successMediaUpload(photo))
-  //   }).catch(err => {
-  //     if (err.status === HTTP_CODE_CONFLICT) {
-  //       dispatch(successMediaUpload(photo))
-  //     } else if (err === 'Could not fetch the image') {
-  //       dispatch(successMediaUpload(photo))
-  //     } else {
-  //       logError(err, 'startMediaBackup create error')
-  //     }
-  //   })
-  // } catch (err) {
-  //   logError(err, 'startMediaBackup getBlob error')
-  // }
+  try {
+    await uploadLibraryItem(dirID, photo)
+    dispatch(successMediaUpload(photo))
+  } catch (err) {
+    logError(err, 'startMediaBackup create error')
+  }
 }
 
 // backupImages

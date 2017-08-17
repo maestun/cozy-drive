@@ -134,7 +134,13 @@ export const uploadLibraryItemOLD = async (dirID, libraryItem) => {
           console.log('increment')
         }
       }
-      ft.upload(libraryItem['fileName'], uri, onUploadSuccess, onUploadFail, options)
+      ft.upload(libraryItem['fileName'], uri, (r) => {
+        onUploadSuccess(r)
+        resolve(r)
+      }, (error) => {
+        onUploadFail(error)
+        reject(error)
+      }, options)
     })
   }
 
