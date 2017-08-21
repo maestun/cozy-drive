@@ -28,14 +28,14 @@ export const initServices = async (store) => {
 
   // retrieve url + token and send to native for keychain storage
   var credentials = await cozy.client.authorize()
-  var token = credentials.token.accessToken
+  var token = 'Bearer ' + credentials.token.accessToken
   var url = encodeURI(cozy.client._url)
 
   const success = (result) => {
-    console.log('authStorage success')
+    console.log('authStorage storeData success')
   }
   const error = (error) => {
-    console.log('authStorage error' + error)
+    console.log('authStorage storeData error' + error)
   }
   window.cordova.plugins.authStorage.storeData(url, token, success, error)
 }
