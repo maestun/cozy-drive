@@ -73,6 +73,15 @@ export function resetClient () {
   if (cozy.client._storage) {
     cozy.client._storage.clear()
   }
+
+  // remove auth from native keychain (iOS)
+  const success = (result) => {
+    console.log('authStorage removeData success')
+  }
+  const error = (err) => {
+    console.log('authStorage removeData error' + err)
+  }
+  window.cordova.plugins.authStorage.removeData(success, error)
 }
 
 export const MAIL_EXCEPTION = 'MAIL_EXCEPTION'
